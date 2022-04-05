@@ -4,8 +4,9 @@
 
 ## 修改
 
-- 新增了波特率，串口名等参数设置，可见nav40_vlp16.launch。
-- cpp代码中有已注释的基于gps时间打时间戳的代码。
+- 可在nav40_vlp16.launch中进行波特率，串口名等参数设置。
+- 代码中有已注释的基于gps时间打时间戳的代码。
+- 可以200Hz的频率发布imu话题数据。
 
 ## 使用
 
@@ -26,7 +27,7 @@ roslaunch nav40_driver nav40_driver.launch
 测试
 
 ```bash
-rostopic echo /imu/data
+rostopic echo /imu_data
 ```
 
 ![alt 属性文本](./res/screenshot_5.png)
