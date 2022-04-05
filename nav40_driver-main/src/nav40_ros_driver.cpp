@@ -17,7 +17,7 @@ using namespace std;
 #define NAV_DL     122    //数据长度
 #define NAV_DH1    0xEB   //帧头
 #define NAV_DH2    0x90   //帧头
-#define MAXSIZE    2048   //缓冲区长度
+#define MAXSIZE    1024   //缓冲区长度
 
 typedef struct
 {
@@ -125,8 +125,8 @@ int main(int argc, char **argv)
     while(ros::ok())
     {
 	//循环队列读取串口数据
-         sensor_msgs::Imu msg;
-         msg.header.stamp = ros::Time::now();
+        sensor_msgs::Imu msg;
+        msg.header.stamp = ros::Time::now();
         len = read(fd, buf, 1);
 	      memcpy(queue_cycle.Recbuf + queue_cycle.tail, buf, len);
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
               }
 
               memcpy(&APM, temp_buf,122 );  // 将一帧完整的数据帧拷贝到结构体
-              //printf("time_stamped:%d\r\n",APM.gps_ms);//打印数据量；
+
             /*
             printf("temperary frame:");
             for(int i=0;i<121;i++){
@@ -167,18 +167,9 @@ int main(int argc, char **argv)
               }
 			       printf("\n");
               //在这里访问结构体成员即可
-                
-              printf("length:%d\r\n",APM.zhen_len);
-            printf("apm_accel_x:%f\r\n",APM.accel_x);
-             printf("apm_accel_y:%f\r\n",APM.accel_y);
-              printf("apm_accel_z%f\r\n",APM. accel_z);
-               printf("apm_accel_x:%f\r\n",APM.pitch_rate);
-             printf("apm_accel_y:%f\r\n",APM.roll_rate);
-              printf("apm_accel_z%f\r\n",APM. yaw_rate);*/
-            
-              // calculate measurement time
+            */
 
-            
+            // GPS信号良好的情况下，打上GPS时间戳；
              /* if(APM.gps_status!=0&&APM.gps_status!=1)
               {
                //printf("gps time valid, gps status:%d\r\n",APM.gps_status);
@@ -196,24 +187,8 @@ int main(int argc, char **argv)
                //msg.header.stamp = ros::Time::now()
                  
               }
-              //printf("IMU time_stamped:%f ms\r\n",t1*1000);//打印时间戳；
-              
-              //printf("System time_stamped:%d\r\n",APM.gps_ms);
+              //创衡imu的加速度是以大地坐标系（NED）为参考系的，要变换到自身参考系后才能发布。
               msg.header.frame_id = frame_id;
-              
-              /*tf::Quaternion q;
-              q = tf::createQuaternionFromRPY(APM.roll,APM.pitch,APM.yaw);
-              msg.orientation.x = q.x();
-              msg.orientation.y = q.y();
-              msg.orientation.z = q.z();
-              msg.orientation.w = q.w();
-              msg.linear_acceleration.x = APM.accel_x;
-              msg.linear_acceleration.y = APM.accel_y;
-              msg.linear_acceleration.z = APM.accel_z;
-              msg.angular_velocity.x = APM.roll_rate;
-              msg.angular_velocity.y = APM.pitch_rate;
-              msg.angular_velocity.z = APM.yaw_rate;*/
-
               msg.angular_velocity.x = APM.roll_rate;
 	            msg.angular_velocity.y = -APM.pitch_rate;
 	            msg.angular_velocity.z = -APM.yaw_rate;
