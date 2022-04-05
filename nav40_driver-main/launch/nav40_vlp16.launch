@@ -1,0 +1,7 @@
+<launch>
+    <node pkg="nav40_driver" type="nav40_driver_node" name="nav40_driver_node" output="screen" />
+    <param name="frame_id" type="string" value="imu_link"/>    
+    <param name="baud" type="int" value="460800"/>
+    <param name="device_port" type="string" value="/dev/ttyUSB0"/>
+
+</launch>
