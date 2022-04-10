@@ -109,10 +109,10 @@ int main(int argc, char **argv)
        printf("open error.\n");
        return 0;
      }
-
-     set_uart_baudrate(fd, baud_);                 //串口初始化
+     //串口初始化
+     set_uart_baudrate(fd, baud_);                
     //定义发布话题；
-    ros::Publisher pub_imu = nh.advertise<sensor_msgs::Imu> ("imu_data",20);
+    ros::Publisher pub_imu = nh.advertise<sensor_msgs::Imu> ("imu_data",1000);
     //设置循环频率
     ros::Rate loop_rate(200);
     cout << "open success"<< endl;
@@ -122,14 +122,27 @@ int main(int argc, char **argv)
     time(&timer);
     stm_ptr=localtime(&timer);
     
+    double time_stamp;
+    bool initial_flag = false;
+
     while(ros::ok())
     {
-	//循环队列读取串口数据
         sensor_msgs::Imu msg;
-        msg.header.stamp = ros::Time::now();
+        if (!initial_flag)
+        {
+          msg.header.stamp = ros::Time::now();
+          time_stamp = msg.header.stamp.toSec();
+          initial_flag = true;
+        }
+        else
+        {
+          time_stamp += double(APM.gps_ms)*0.001;
+          msg.header.stamp = ros::Time::now().fromSec(time_stamp);
+        }
+
+        	//循环队列读取串口数据
         len = read(fd, buf, 1);
 	      memcpy(queue_cycle.Recbuf + queue_cycle.tail, buf, len);
-
 	      queue_cycle.tail = (queue_cycle.tail + 1) % MAXSIZE; 
        //进入帧结构判断
      //循环队列大于等于2倍的长度，才进入帧结构的判断
